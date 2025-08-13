@@ -21,7 +21,7 @@ function App() {
     setLoadingFiles(true);
     setFiles([]);
     try {
-      const res = await axios.get("http://localhost:5000/files");
+      const res = await axios.get("https://test-case-gen-ai-civ1.vercel.app/files");
       setFiles(res.data || []);
     } catch (err) {
       console.error("loadFiles:", err);
@@ -43,7 +43,7 @@ function App() {
     setLoadingContents(true);
     setFileContents([]);
     try {
-      const res = await axios.post("http://localhost:5000/file-contents", {
+      const res = await axios.post("https://test-case-gen-ai-civ1.vercel.app/file-contents", {
         files: selected,
       });
       setFileContents(res.data || []);
@@ -70,7 +70,7 @@ function App() {
     setCodeStatus({});
     try {
       const res = await axios.post(
-        "http://localhost:5000/generate-test-summaries",
+        "https://test-case-gen-ai-civ1.vercel.app/generate-test-summaries",
         { files: fileContents }
       );
       setSummaries(
@@ -94,7 +94,7 @@ function App() {
     }));
 
     try {
-      const res = await axios.post("http://localhost:5000/generate-code", { summary });
+      const res = await axios.post("https://test-case-gen-ai-civ1.vercel.app/generate-code", { summary });
       setCodeStatus((prev) => ({
         ...prev,
         [idx]: { loading: false, code: res.data.code },
