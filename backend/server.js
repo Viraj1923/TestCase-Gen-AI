@@ -126,5 +126,6 @@ app.post("/generate-code", async (req, res) => {
 });
 
 app.listen(5000, () => {
-    console.log("Backend running on http://localhost:3000");
+    console.log("Backend running on https://test-case-gen-ai-civ1.vercel.app/");
 });
+
