@@ -1,5 +1,3 @@
-// api/index.js
-
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
@@ -8,26 +6,25 @@ const { generateTestSummaries } = require("./gemini");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// ===== CORS Settings =====
-const allowedOrigins = [
-  'http://localhost:3000',
-  process.env.FRONTEND_URL || ''
-];
+const app = express();
 
-const corsOptions = {
+// ===== CORS Settings =====
+const allowedOrigins =
+  process.env.NODE_ENV === 'development'
+    ? ['http://localhost:3000']
+    : [process.env.FRONTEND_URL || ''];
+
+app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'CORS policy does not allow access from this origin.';
-      return callback(new Error(msg), false);
+    if (!allowedOrigins.includes(origin)) {
+      return callback(new Error('CORS policy blocked this origin.'), false);
     }
     return callback(null, true);
   },
   optionsSuccessStatus: 200
-};
+}));
 
-const app = express();
-app.use(cors(corsOptions));
 app.use(express.json());
 
 // ===== ENV Vars =====
@@ -43,7 +40,7 @@ if (!GITHUB_TOKEN) {
 // ===== ROUTES =====
 
 // Get list of files
-app.get('/api/files', async (req, res) => {
+app.get('/files', async (req, res) => {
   if (!owner || !repo || !branch) {
     return res.status(400).json({ error: "Missing owner, repo, or branch" });
   }
@@ -70,7 +67,7 @@ app.get('/api/files', async (req, res) => {
 });
 
 // Get file contents
-app.post('/api/file-contents', async (req, res) => {
+app.post('/file-contents', async (req, res) => {
   const { files } = req.body;
 
   if (!files || files.length === 0) {
@@ -97,7 +94,7 @@ app.post('/api/file-contents', async (req, res) => {
 });
 
 // Generate summaries
-app.post("/api/generate-test-summaries", async (req, res) => {
+app.post("/generate-test-summaries", async (req, res) => {
   try {
     const { files } = req.body;
     if (!files || files.length === 0) {
@@ -113,7 +110,7 @@ app.post("/api/generate-test-summaries", async (req, res) => {
 });
 
 // Generate test code
-app.post("/api/generate-code", async (req, res) => {
+app.post("/generate-code", async (req, res) => {
   const { summary } = req.body;
   if (!summary) {
     return res.status(400).json({ error: "No summary provided" });
@@ -141,4 +138,3 @@ app.post("/api/generate-code", async (req, res) => {
 
 // ===== Export for Vercel =====
 module.exports = app;
-
