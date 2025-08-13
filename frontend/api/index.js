@@ -4,7 +4,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
-const { generateTestSummaries } = require("../gemini");
+const { generateTestSummaries } = require("./gemini");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -141,3 +141,4 @@ app.post("/api/generate-code", async (req, res) => {
 
 // ===== Export for Vercel =====
 module.exports = app;
+
