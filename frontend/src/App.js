@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+const API_URL="https://test-case-gen-ai-civ1.vercel.app";
+
 function App() {
   const [files, setFiles] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -21,7 +23,7 @@ function App() {
     setLoadingFiles(true);
     setFiles([]);
     try {
-      const res = await axios.get("https://test-case-gen-ai-civ1.vercel.app/files");
+      const res = await axios.get(`${API_URL}/files`);
       setFiles(res.data || []);
     } catch (err) {
       console.error("loadFiles:", err);
@@ -43,7 +45,7 @@ function App() {
     setLoadingContents(true);
     setFileContents([]);
     try {
-      const res = await axios.post("https://test-case-gen-ai-civ1.vercel.app/file-contents", {
+      const res = await axios.post(`${API_URL}/file-contents`, {
         files: selected,
       });
       setFileContents(res.data || []);
@@ -70,7 +72,7 @@ function App() {
     setCodeStatus({});
     try {
       const res = await axios.post(
-        "https://test-case-gen-ai-civ1.vercel.app/generate-test-summaries",
+        `${API_URL}/generate-test-summaries`,
         { files: fileContents }
       );
       setSummaries(
@@ -94,7 +96,7 @@ function App() {
     }));
 
     try {
-      const res = await axios.post("https://test-case-gen-ai-civ1.vercel.app/generate-code", { summary });
+      const res = await axios.post(`${API_URL}/generate-code`, { summary });
       setCodeStatus((prev) => ({
         ...prev,
         [idx]: { loading: false, code: res.data.code },
