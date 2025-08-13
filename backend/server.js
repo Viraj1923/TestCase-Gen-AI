@@ -7,8 +7,26 @@ const { generateTestSummaries, generateTestCode } = require("./gemini");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+
+// This is the URL of your local React development server.
+const allowedOrigins = ['http://localhost:3000', 'https://test-case-gen-ai-civ1.vercel.app'];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+            return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+    },
+    optionsSuccessStatus: 200 
+};
+
+
 const app = express();
 app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -128,4 +146,5 @@ app.post("/generate-code", async (req, res) => {
 app.listen(5000, () => {
     console.log("Backend running on https://test-case-gen-ai-civ1.vercel.app/");
 });
+
 
